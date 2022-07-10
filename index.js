@@ -22,20 +22,22 @@ const content = `\uFEFF
 
       Start-Sleep -s $player.NaturalDuration.TimeSpan.TotalSeconds;
 
-    } else if($time -gt 233) {
-      Write-Host "加载失败,随机播放下一首";
-
-      $time = 0;
-      play;
-
     } else {
-      $time = $time + 1;
-      Start-Sleep 1;
+      if($time -gt 233) {
+        Write-Host "加载失败,随机播放下一首";
 
-      Write-Host "等待加载中... " $time"s";
+        $time = 0;
+        play;
 
-      sleepFn;
+      } else {
+        $time = $time + 1;
+        Start-Sleep 1;
 
+        Write-Host "等待加载中... " $time"s";
+
+        sleepFn;
+
+      }
     }
   }
 
