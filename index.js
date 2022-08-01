@@ -13,6 +13,7 @@ const content = `\uFEFF
   Add-Type -AssemblyName presentationCore;
   $global:player = New-Object system.windows.media.mediaplayer;
   $global:time = 0;
+  $global:pauseLock = "false";
 
   function global:sleepFn() {
     if($player.NaturalDuration.TimeSpan) {
@@ -27,7 +28,6 @@ const content = `\uFEFF
         Write-Host "加载失败,随机播放下一首";
 
         $time = 0;
-        play;
 
       } else {
         $time = $time + 1;
@@ -43,13 +43,19 @@ const content = `\uFEFF
 
   function global:play() {
 
-    $index = get-random -maximum $musicList.length;
+    if($global:pauseLock -eq "true") {
+      $player.play();
 
-    Write-Host "歌曲名: " $musicList[$index];
-    Write-Host "随机数: " $index;
+      $global:pauseLock = "false";
+    } else {
+      $index = get-random -maximum $musicList.length;
 
-    $player.open($musicList[$index]);
-    $player.play();
+      Write-Host "歌曲名: " $musicList[$index];
+      Write-Host "随机数: " $index;
+
+      $player.open($musicList[$index]);
+      $player.play();
+    }
 
     sleepFn;
 
@@ -62,6 +68,7 @@ const content = `\uFEFF
 
   function global:pause() {
     $player.pause();
+    $global:pauseLock = "true";
   }
 
   play;
